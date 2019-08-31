@@ -1,8 +1,7 @@
-builtin.o: builtin.c builtin.h command.h bstring/bstrlib.h
 command.o: command.c /usr/include/glib-2.0/gmodule.h \
  /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
  /usr/include/glib-2.0/glib/gtypes.h \
- /usr/lib/i386-linux-gnu/glib-2.0/include/glibconfig.h \
+ /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h \
  /usr/include/glib-2.0/glib/gmacros.h \
  /usr/include/glib-2.0/glib/gversionmacros.h \
  /usr/include/glib-2.0/glib/garray.h \
@@ -65,6 +64,4 @@ command.o: command.c /usr/include/glib-2.0/gmodule.h \
  /usr/include/glib-2.0/glib/deprecated/gthread.h \
  /usr/include/glib-2.0/glib/glib-autocleanups.h command.h \
  bstring/bstrlib.h bstring/bstrlib.h
-execute.o: execute.c execute.h command.h bstring/bstrlib.h
-main.o: main.c builtin.h command.h bstring/bstrlib.h parser.h
 bstrlib.o: bstring/bstrlib.c bstring/bstrlib.h

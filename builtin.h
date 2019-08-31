@@ -14,6 +14,9 @@ cmd_id builtin_index (const pipeline pipe);
 /* Este caso partcular es util para cortar el ciclo principal */
 bool builtin_is_exit (const pipeline pipe);
 
+
+bool builtin_is_cd(const pipeline pipe);
+
 void builtin_run (const pipeline pipe);
 
 #endif

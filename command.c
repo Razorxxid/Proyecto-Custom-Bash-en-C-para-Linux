@@ -15,7 +15,7 @@ struct scommand_s{
 
 scommand scommand_new(void){
     scommand result=calloc(1, sizeof(struct scommand_s));
-    assert(result!=NULL && scommand_is_empty(result));
+    assert(result!=NULL);
     result->queue=g_queue_new(); 
     result->input=NULL;
     result->output=NULL;
@@ -163,6 +163,7 @@ void pipeline_push_back(pipeline self, scommand sc) {
 void pipeline_pop_front(pipeline self){
     assert(self!=NULL && !pipeline_is_empty(self));
     g_queue_pop_head(self->queue);
+
 }
 
 void pipeline_set_wait(pipeline self, const bool w) {
