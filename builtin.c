@@ -56,12 +56,16 @@ void builtin_run (const pipeline pipe){
 					scommand_pop_front(com);
 					path= bstr2cstr(scommand_front(com), '\0');
 					
+					ret=chdir(path);
+					if(ret!=0){
+						fprintf(stderr, "path %s not found \n", path);
+					}else{
+						printf("$ %s\n",path );
+					}
+				}else{
+					printf("incorrect command\n");
 				}
 				
-			}
-			ret=chdir(path);
-			if(ret!=0){
-				fprintf(stderr, "path %s not found \n", path);
 			}
 
 		
