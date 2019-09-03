@@ -14,7 +14,6 @@
 
 void execute_pipeline(pipeline apipe) {
     scommand self;
-    char * commandstr;
     int cid;
     int ret_ex;
     assert(apipe!=NULL);
@@ -26,7 +25,6 @@ void execute_pipeline(pipeline apipe) {
             if (builtin_index(apipe) == BUILTIN_CHDIR || builtin_index(apipe) == BUILTIN_EXIT) {
                 builtin_run(apipe);    
             }else{
-                commandstr = bstr2cstr(scommand_front(self),'\0');
                 cid = fork();
 
                 if(cid!=0){
@@ -39,6 +37,10 @@ void execute_pipeline(pipeline apipe) {
                     int index=0;
                     char* parsed;
                     char* argv[scommand_length(self)];
+                    const_bstring comando = scommand_to_string(self);
+                    char* commandStr = bstr2cstr(comando,'\0');
+
+
                     /*deberiamos cambiar esto por pipe()*/
                     int fdin = open (bstr2cstr (scommand_get_redir_in (self),'\0'), O_RDWR,0700);
                     int fdout = open (bstr2cstr (scommand_get_redir_out (self),'\0'), O_RDWR,0700);
@@ -47,7 +49,7 @@ void execute_pipeline(pipeline apipe) {
 
                     if (fdout>0) {dup2 (fdout,1);}
 
-                    parsed = strtok(commandstr, " ");;
+                    parsed = strtok(commandStr, " ");;
                     
                     while(parsed!=NULL) {
                         argv[index]=parsed;
