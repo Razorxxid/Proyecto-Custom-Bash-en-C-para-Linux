@@ -1,94 +1,73 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <sys/wait.h> 
-#include <unistd.h> 
 #include "execute.h"
+#include <stdlib.h>
+#include <unistd.h>
 #include "builtin.h"
 #include "command.h"
-
+#include <fcntl.h> 
+#include <errno.h>
+#include <gmodule.h>
+#include <assert.h>
+#include <sys/wait.h>
+#include "./tests/syscall_mock.h"
 
 
 void execute_pipeline(pipeline apipe) {
+    scommand self;
+    char * commandstr;
+    int cid;
+    int ret_ex;
+    assert(apipe!=NULL);
 
-	int pp;	//para ver si pipe funciona bien
-	int fd[2]; //file descriptors//
- 	pid_t cid;
- 	cmd_id cmid=builtin_index(apipe);
- 	scommand sc;
- 	char *sc_str;
-	assert(apipe!=NULL);
- 	cmid= builtin_index(apipe);
+    if(!pipeline_is_empty(apipe)) {
+        self = pipeline_front(apipe);
+        
+        if (pipeline_length(apipe) == 1) {
+            if (builtin_index(apipe) == BUILTIN_CHDIR || builtin_index(apipe) == BUILTIN_EXIT) {
+                builtin_run(apipe);    
+            }else{
+                commandstr = bstr2cstr(scommand_front(self),'\0');
+                cid = fork();
 
- 	if(!pipeline_is_empty(apipe)){
+                if(cid!=0){
+                    wait(NULL);
 
-	 	if (pipeline_length(apipe)==1){
-	 		if(cmid==BUILTIN_CHDIR|| cmid== BUILTIN_EXIT){
-	 			builtin_run(apipe);
-	 		}else{
-			 	sc=pipeline_front(apipe);
-			 	sc_str=bstr2cstr(scommand_to_string(sc), ' ');
-	 			execv("/bin/ls", &sc_str ); //bin contiene todos los programas del bash
-	 		}
-	 	}else{
+                }else if(cid==-1){
+                	fprintf(stderr, "child process failed\n");
 
-		 	pp = pipe(fd); 
+                }else{
+                    int index=0;
+                    char* parsed;
+                    char* argv[scommand_length(self)];
+                    /*deberiamos cambiar esto por pipe()*/
+                    int fdin = open (bstr2cstr (scommand_get_redir_in (self),'\0'), O_RDWR,0700);
+                    int fdout = open (bstr2cstr (scommand_get_redir_out (self),'\0'), O_RDWR,0700);
+                    /*-----------------------------------*/
+                    if (fdin>0) {dup2 (fdin,0);}
 
-		 	if (pp!=0){
-				exit(EXIT_FAILURE); 
-		 	}
-		 	cid=fork();
+                    if (fdout>0) {dup2 (fdout,1);}
 
-		 		if (cid==0){
-		 			close(fd[0]); //cierra file descriptor 0(stdin) 
+                    parsed = strtok(commandstr, " ");;
+                    
+                    while(parsed!=NULL) {
+                        argv[index]=parsed;
+                        index++;
+                        parsed= strtok(NULL, " ");
+                    }
+                    argv[index] = NULL;
+                    close (fdin);
+                    close (fdout);
+                    ret_ex=execvp(argv[0], argv);
 
-		 		}else{
-		 			wait(NULL);
-
-		 		}
-	 	}
-
-	}
+                    if (ret_ex==-1){
+                    	fprintf(stderr, "invalid command\n");
+                    }
+                }
+            }
+        } else {
+            
+        }
+    }  
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-/*	scommand sc;
-	bstring cd;
-	int pid;
-	int ls;
-	assert(apipe!=NULL);
-
-	assert(apipe!=NULL);
-	cd=bfromcstr("cd");
-	if(!pipeline_is_empty(apipe)){
-		if (pipeline_length(apipe)==1){
-			builtin_run(apipe);
-		}
-	
-		for (unsigned int i=0; i<pipeline_length(apipe);i++){
-			sc=pipeline_front(apipe);
-			if(!bstricmp(scommand_front(sc),cd)){
-				pid=fork();
-				if (pid==0){
-					builtin_run(apipe);
-				}else{
-					pipeline_pop_front(apipe);
-					ls=system("cd /home");
-					exit(ls);
-				}
-			}
-		}
-	}
-}
-*/

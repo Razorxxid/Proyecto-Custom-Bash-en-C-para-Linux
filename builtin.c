@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "builtin.h"
 #include "command.h"
+#include "./tests/syscall_mock.h"
 
 
 cmd_id builtin_index (const pipeline pipe){
@@ -10,16 +11,14 @@ cmd_id builtin_index (const pipeline pipe){
 
 	bstring cd = bfromcstr("cd");
 	bstring exit = bfromcstr("exit");
-	for(unsigned int i=0; i<pipeline_length(pipe)-1; ++i){
+	for(unsigned int i=0; i<pipeline_length(pipe); ++i){
 		scommand c = pipeline_front(pipe);
 
-		if(bstrcmp(scommand_front(c), cd)) {
+		if(!bstrcmp(scommand_front(c), cd)) {
 			builtin = BUILTIN_CHDIR;
-		}
-		else if (bstrcmp(scommand_front(c), exit)) {
+		}else if (!bstrcmp(scommand_front(c), exit)) {
 			builtin = BUILTIN_EXIT;
-		}
-		else {
+		}else {
 			builtin = BUILTIN_UNKNOWN;
 		}
 
@@ -45,28 +44,34 @@ bool builtin_is_exit (const pipeline pipe) {
 
 void builtin_run (const pipeline pipe){
 	const char *path=NULL;
-	bstring cd=bfromcstr("cd");
+	cmd_id com_id = builtin_index(pipe);
 	int ret;
+	scommand sc;
 		if (builtin_is_exit(pipe)){
+			printf("terminated\n");
 			exit(0);
 		}
-			for(unsigned int i=0; i<pipeline_length(pipe); ++i){
-				scommand com = pipeline_front(pipe); 
-				if(!bstrcmp(scommand_front(com),cd)){
-					scommand_pop_front(com);
-					path= bstr2cstr(scommand_front(com), '\0');
+				sc = pipeline_front(pipe); 
+				if(com_id == BUILTIN_CHDIR){
+					if (scommand_length(sc)==2){
+					scommand_pop_front(sc);
+					path= bstr2cstr(scommand_front(sc), '\0');
 					
 					ret=chdir(path);
-					if(ret!=0){
-						fprintf(stderr, "path %s not found \n", path);
+						if(ret!=0){
+							fprintf(stderr, "path %s not found \n", path);
+						}else{
+							printf("$ %s\n",path );
+						}
+					}else if(scommand_length(sc)<2){
+						fprintf(stderr, "few arguments\n");
 					}else{
-						printf("$ %s\n",path );
+						fprintf(stderr, "many arguments\n");
 					}
 				}else{
 					printf("incorrect command\n");
 				}
 				
-			}
 
 		
 }
