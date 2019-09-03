@@ -33,7 +33,6 @@ scommand scommand_destroy(scommand self){
     return NULL;
 }
 
-
 void scommand_push_back(scommand self, bstring argument){
     assert(self!=NULL && argument!=NULL);
     g_queue_push_tail(self->queue, argument);

@@ -61,7 +61,8 @@ void builtin_run (const pipeline pipe){
 						if(ret!=0){
 							fprintf(stderr, "path %s not found \n", path);
 						}else{
-							printf("$ %s\n",path );
+
+							printf("$ %s \n",path );
 						}
 					}else if(scommand_length(sc)<2){
 						fprintf(stderr, "few arguments\n");

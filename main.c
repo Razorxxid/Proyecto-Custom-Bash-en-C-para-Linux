@@ -13,7 +13,8 @@ int main(int argc, char const *argv[])
 	printf("$ ");
 	
 	pipe = parse_pipeline(parser_new(stdin));
-	execute_pipeline(pipe);	
+	execute_pipeline(pipe);
+	
 }
 	return 0;
 }
