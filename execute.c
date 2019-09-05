@@ -31,9 +31,7 @@ void execute_pipeline(pipeline apipe) {
             if (builtin_index(apipe) == BUILTIN_CHDIR || builtin_index(apipe) == BUILTIN_EXIT) {
                     builtin_run(apipe);    
             }else{ 
-                int status=0;
-                int background=0;
-                background=pipeline_get_wait(apipe);
+                int background=pipeline_get_wait(apipe);
                 cid = fork();
 
 
@@ -43,17 +41,19 @@ void execute_pipeline(pipeline apipe) {
                 else if(cid==0){
                     char* argv[scommand_length(current)];
                     char* parsed;
+                    int fd_in=0;
+                    int fd_out=1;
                     unsigned int index=0;
                     commandStr = bstr2cstr(scommand_basic(current),'\0');
                         if(scommand_get_redir_in(current)!=NULL) {
-                            int fd_in = open(bstr2cstr(scommand_get_redir_in(current),'\0'), O_RDWR | O_CREAT ,0777);
+                            fd_in = open(bstr2cstr(scommand_get_redir_in(current),'\0'), O_RDWR | O_CREAT ,0777);
                             if(fd_in<=0){
                                 fprintf(stderr, "failed open input\n");
                             }
                             dup2(fd_in,0);
                         }
                         if(scommand_get_redir_out(current)!=NULL) {
-                           int fd_out = open(bstr2cstr(scommand_get_redir_out(current),'\0'),O_RDWR|O_CREAT ,0777);
+                           fd_out = open(bstr2cstr(scommand_get_redir_out(current),'\0'),O_RDWR|O_CREAT ,0777);
                            if(fd_out<=0){
                            fprintf(stderr, "failed open output\n");
                            }
@@ -69,31 +69,19 @@ void execute_pipeline(pipeline apipe) {
                         argv[index] = NULL;
 
 
-                    /* me fijo si tengo que esperar*/
-
-                    if(!background) {
-                        fclose(stdin); // cierro el stdin del hijo
-                    
-
                         ret_ex =  execvp(argv[0], argv);
-
-                        if(ret_ex<0) {
-                        fprintf(stderr, "execvp failure\n"); 
-                        }
-                        exit(1);
-
-                    }else{ // sino tengo que esperar al hijo
-                        ret_ex =  execvp(argv[0], argv);
+                        
                         if(ret_ex<0) {
                             fprintf(stderr, "execvp failure\n"); 
                         }
                         exit(1);
-                    }
+                    
 
 
                 }else{ //parent process
+                    /* me fijo si tengo que esperar*/
                     if(background){
-                        wait( &status);
+                        wait(NULL);
                     }
                 
                 }
@@ -108,62 +96,26 @@ void execute_pipeline(pipeline apipe) {
 
 
 
-        }else{
-                for (unsigned int i=0u; i<length; i++){
-                    scommand current = pipeline_front(apipe);
-                    char* argv[scommand_length(current)];
-                    char* commandStr;
-                    char* parsed;
-                    unsigned int index=0;
-                    if(scommand_get_redir_in(current)!=NULL) {
-                        int fd_in = open(bstr2cstr(scommand_get_redir_in(current),'\0'), O_RDWR | O_CREAT ,0777);
-                        if(fd_in<=0){
-                            fprintf(stderr, "failed open input\n");
-                            exit(EXIT_FAILURE);
-                        }
-                        dup2(fd_in,0);
-                    }
-                    if(scommand_get_redir_out(current)!=NULL) {
-                       int fd_out = open(bstr2cstr(scommand_get_redir_out(current),'\0'),O_RDWR|O_CREAT ,0777);
-                       if(fd_out<=0){
-                       fprintf(stderr, "failed open output\n");
-                       }
-                       dup2(fd_out,1);
-                    }  
-                    
-                    commandStr = bstr2cstr(scommand_basic(current),'\0');
-                    parsed = strtok(commandStr, " ");
-                    while(parsed!=NULL){
-                        argv[index]=parsed;
-                        index++;
-                        parsed= strtok(NULL, "");
-                    }
-                    argv[index] = NULL; 
-                    
-                    cid = fork();
-                    if(cid!=0){
-                        wait(NULL);
-                    }
+        }else if (length==2){
+        /*	int fd1;
+        	int ret_pp;
+        	pid_t c_id;
 
-                    if(cid==0){
-                        ret_ex =  execvp(argv[0], argv);
-                        if(ret_ex<0) {
-                           fprintf(stderr, "execvp failure\n"); 
-                        }
-                        exit(EXIT_SUCCESS);
-                    }
-                    
-               }
-            
+        	ret_pp=pipe(fd1);
+        	if(ret_pp!=0){
+        		fprintf(stderr, "failed pipe\n" );
+        	}
+
+
+
+
+
+*/
         }
 
+
     }
-
-
 }
-
-
-
 
 
 
