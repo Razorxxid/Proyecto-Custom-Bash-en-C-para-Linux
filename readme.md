@@ -34,9 +34,10 @@ Necesitamos parsear el comando para pasárselo a ```execvp``` para que lo ejecut
 
 Ésto lo logramos con una funcion auxiliar, que conviertiera a string el comando ignorando los redirectores > y <, y luego, rellenando el arreglo ```args[]``` que necesitaba ```execvp``` con los argumentos del comando.
 
-Para el caso donde tenemos 2 comandos, llamamos a ```fork()```, inicializando un pipe, para utilizar los file descriptors y poder pasar inputs. El primer proceso, se encarga del primer comando, fijándose si necesitar usar redirecciones o no. Luego de lograr eso, parsea y utiliza execvp para el primer comando. Para el segundo comando necesitamos utilizar Pop para obtener el segundo comando, recibimos la informacion del file descriptor, y nuevamente parseamos y mandamos a execvp a ejecutar.
+Para el caso donde tenemos 2 comandos, llamamos a ```fork()```, inicializando un pipe, para utilizar los file descriptors y poder pasar inputs. El primer proceso, se encarga del primer comando, fijándose si necesitar usar redirecciones o no. Luego de lograr eso, parsea y utiliza execvp para el primer comando. Para el segundo proceso necesitamos utilizar Pop para obtener el segundo comando, recibimos la informacion del file descriptor, y nuevamente parseamos y mandamos a execvp a ejecutar.
 
 
 # **Resultado Final**
 El resultado final fue una bash con la funcionalidad de correr 1 comando o como máximo dos.
 Logramos cubrir los casos bordes, adquiriendo flexibilidad y robustez al programa. Tuvimos problemas con los procesos zombies, y luego de testear continuamente pudimos manejarlos.
+
