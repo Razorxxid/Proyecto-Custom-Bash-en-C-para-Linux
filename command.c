@@ -23,7 +23,7 @@ scommand scommand_new(void){
 scommand scommand_destroy(scommand self){
     assert(self!=NULL);
     if(self!=NULL){
-    //g_queue_free_full(self->queue, (GDestroyNotify) bdestroy);
+    g_queue_free_full(self->queue, (GDestroyNotify) bdestroy);
         if (self->input!=NULL) {
             bdestroy(self->input);
         }
@@ -155,7 +155,7 @@ pipeline pipeline_new(void) {
 
 pipeline pipeline_destroy(pipeline self) {
     assert(self!=NULL);
- //   g_queue_free_full (self->queue, (GDestroyNotify) scommand_destroy);
+    g_queue_free_full (self->queue, (GDestroyNotify) scommand_destroy);
     free(self);
     return(NULL);
 }
