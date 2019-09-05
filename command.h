@@ -132,6 +132,16 @@ bstring scommand_to_string(const scommand self);
  *   blength(result)>0
  */
 
+bstring scommand_basic(const scommand self);
+/*Funcion auxiliar de scommand_to_string
+* Genera la representacion del comando simple, solamente teniendo en cuenta la cola de comandos.
+*   self:comando simple a convertir.
+*   Returns:un bstring que contiene el comando simple sin redireccion.
+* Requires: self!=NULL
+* Ensures: scommand_is_empty(self) || blength(result)>0
+*    
+*/
+
 
 /*
  * pipeline: tubería de comandos.

@@ -17,4 +17,5 @@ void execute_pipeline(pipeline apipe);
  * Requires: apipe!=NULL
  */
 
+char *parser_bstring_to_string(scommand self);
 #endif /* EXECUTE_H */
