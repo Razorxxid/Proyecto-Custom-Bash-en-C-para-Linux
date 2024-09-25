@@ -1,7 +1,7 @@
 TARGET=baash
 CC=gcc
 CPPFLAGS=`pkg-config --cflags glib-2.0`
-CFLAGS=-std=c99 -Wall -Wextra  -Wbad-function-cast -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wno-unused-parameter -Werror -g -pedantic
+CFLAGS=-std=c99 -Wall -Wextra  -Wbad-function-cast -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wno-unused-parameter -Werror -g -pedantic -D_XOPEN_SOURCE
 LDFLAGS=`pkg-config --libs glib-2.0`
 
 # Propagar entorno a make en tests/

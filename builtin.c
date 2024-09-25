@@ -54,8 +54,5 @@ void builtin_run (const pipeline pipe){
 				}else{
 					printf("incorrect command\n");
 				}
-				
-
-		
 }
 
